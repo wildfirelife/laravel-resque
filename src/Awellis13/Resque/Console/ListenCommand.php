@@ -42,7 +42,7 @@ class ListenCommand extends Command {
 	public function fire()
 	{
 		// Read input
-		$logLevel = $this->input->getOption('verbose') ? Resque_Worker::LOG_NORMAL : 0;
+		$logLevel = $this->input->getOption('verbose') ? true : false;
 		$queue    = $this->input->getOption('queue');
 		$interval = $this->input->getOption('interval');
 
