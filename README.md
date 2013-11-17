@@ -54,7 +54,7 @@ If you choose to not use this driver as your default Queue driver you can call a
 
 ### Enqueing a Future Job
 
-	$when = time() + 3600; // 1 hour from now
+	$when = 3600; // 1 hour from now
 	Queue::later($when, 'JobName', array('name' => 'Andrew'));
 
 ## Further Documentation
