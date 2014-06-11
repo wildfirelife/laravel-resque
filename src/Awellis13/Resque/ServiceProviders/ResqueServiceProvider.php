@@ -86,19 +86,4 @@ class ResqueServiceProvider extends QueueServiceProvider {
 		$this->commands('command.resque.scheduler');
 	}
 
-	/**
-	 * Registers the artisan command.
-	 *
-	 * @return void
-	 */
-	protected function registerCommand()
-	{
-		$this->app['command.resque.listen'] = $this->app->share(function ($app)
-		{
-			return new ListenCommand;
-		});
-
-		$this->commands('command.resque.listen');
-	}
-
 } // End ResqueServiceProvider
