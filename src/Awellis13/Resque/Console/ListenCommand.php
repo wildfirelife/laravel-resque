@@ -8,6 +8,11 @@ use Resque;
 use Resque_Worker;
 use Resque_Log;
 
+/**
+ * Class ResqueQueue
+ *
+ * @package Resque\Console
+ */
 class ListenCommand extends Command {
 
 	/**
@@ -43,23 +48,42 @@ class ListenCommand extends Command {
 	{
 		// Read input
 		$logLevel = $this->input->getOption('verbose') ? true : false;
-		$queue    = $this->input->getOption('queue');
+
+		$queue = $this->input->getOption('queue');
 		$interval = $this->input->getOption('interval');
 
+		// Configuration
+		$config = Config::get('database.redis.default');
+
+		if (!isset($config['host']))
+		{
+			$config['host'] = '127.0.0.1';
+		}
+
+		if (!isset($config['port']))
+		{
+			$config['port'] = 6379;
+		}
+
+		if (!isset($config['database']))
+		{
+			$config['database'] = 0;
+		}
+
 		// Connect to redis
-		Resque::setBackend(Config::get('database.redis.default.host').':'.Config::get('database.redis.default.port'));
+		Resque::setBackend($config['host'].':'.$config['port'], $config['database']);
 
 		// Launch worker
-		$queues           = explode(',', $queue);
+		$queues = explode(',', $queue);
 		$logger = new Resque_Log($logLevel);
-		$worker           = new Resque_Worker($queues);
+		$worker = new Resque_Worker($queues);
 		$worker->setLogger($logger);
 		$worker->logLevel = $logLevel;
 
-		fwrite(STDOUT, '*** Starting worker ' . $worker . "\n");
+		fwrite(STDOUT, '*** Starting worker '.$worker."\n");
 		$worker->work($interval);
 	}
-	
+
 	/**
 	 * Get the console command options.
 	 *
@@ -67,10 +91,10 @@ class ListenCommand extends Command {
 	 */
 	protected function getOptions()
 	{
-		return array(
-			array('queue', null, InputOption::VALUE_OPTIONAL, 'The queue to listen on', 'default'),
-			array('interval', null, InputOption::VALUE_OPTIONAL, 'Amount of time to delay failed jobs', 5),
-		);
+		return [
+			['queue', NULL, InputOption::VALUE_OPTIONAL, 'The queue to listen on', 'default'],
+			['interval', NULL, InputOption::VALUE_OPTIONAL, 'Amount of time to delay failed jobs', 5],
+		];
 	}
 
-}
+} // End ListenCommand
